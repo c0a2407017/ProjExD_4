@@ -321,6 +321,7 @@ def main():
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
+    shield = pg.sprite.Group()  # 防御壁
 
     tmr = 0
     clock = pg.time.Clock()
