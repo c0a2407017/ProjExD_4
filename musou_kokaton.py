@@ -101,6 +101,8 @@ class Bird(pg.sprite.Sprite):
             self.image = self.imgs[self.dire]
         screen.blit(self.image, self.rect)
 
+        self.speed = 14 if key_lst[pg.K_LSHIFT] else 7
+
 
 class Bomb(pg.sprite.Sprite):
     """
