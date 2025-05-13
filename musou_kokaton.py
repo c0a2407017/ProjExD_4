@@ -281,7 +281,6 @@ def main():
             if event.type == pg.KEYDOWN and key_lst[pg.K_LSHIFT] and key_lst[pg.K_SPACE]:
                 neobeam = NeoBeam(bird, 5)
                 neobeam_ls = neobeam.gen_beams() 
-                print(neobeam_ls)
                 for i in neobeam_ls:
                     beams.add(Beam(bird, i))  
         screen.blit(bg_img, [0, 0])
