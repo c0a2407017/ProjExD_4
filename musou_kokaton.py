@@ -165,7 +165,6 @@ class Beam(pg.sprite.Sprite):
     """
     ビームに関するクラス
     """
-    def __init__(self, bird: Bird):
     def __init__(self, bird: Bird, angle_offset: int = 0):
         """
         ビーム画像Surfaceを生成する
