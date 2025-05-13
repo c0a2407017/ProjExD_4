@@ -160,7 +160,7 @@ class Beam(pg.sprite.Sprite):
         super().__init__()
         self.vx, self.vy = bird.dire
         angle = math.degrees(math.atan2(-self.vy, self.vx))
-        self.image = pg.transform.rotozoom(pg.image.load(f"fig/beam.png"), angle, 1.0)
+        self.image = pg.transform.rotozoom(pg.image.load(f"fig/beam.png"), angle , 1.0)
         self.vx = math.cos(math.radians(angle))
         self.vy = -math.sin(math.radians(angle))
         self.rect = self.image.get_rect()
@@ -176,7 +176,7 @@ class Beam(pg.sprite.Sprite):
         self.rect.move_ip(self.speed*self.vx, self.speed*self.vy)
         if check_bound(self.rect) != (True, True):
             self.kill()
-
+            
 
 class Explosion(pg.sprite.Sprite):
     """
@@ -204,6 +204,25 @@ class Explosion(pg.sprite.Sprite):
         self.image = self.imgs[self.life//10%2]
         if self.life < 0:
             self.kill()
+
+class Gravity(pg.sprite.Sprite):
+    """ 
+    重力に関するクラス
+    """
+    def __init__(self, life: int):
+        super().__init__()
+        self.image = pg.Surface((WIDTH, HEIGHT))
+        self.rect = self.image.get_rect()
+        self.rect.center = WIDTH//2, HEIGHT//2
+        pg.draw.rect(self.image, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
+        self.image.set_alpha(128)
+        self.life = life
+    
+    def update(self):
+        self.life -= 1
+        if self.life < 0:
+            self.kill()
+
 
 
 class Enemy(pg.sprite.Sprite):
@@ -297,6 +316,7 @@ def main():
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
     shield = pg.sprite.Group()
+    gravity = pg.sprite.Group()
 
     tmr = 0
     clock = pg.time.Clock()
@@ -316,6 +336,10 @@ def main():
                     bird.state="hyper"
                     bird.hyper_life=500
 
+            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
+                if score.value >= 200:
+                    score.value -=200
+                    gravity.add(Gravity(400))
         screen.blit(bg_img, [0, 0])
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
@@ -339,6 +363,15 @@ def main():
             if bird.state == "hyper":
                 score.value +=1          
                 break
+        for emy in pg.sprite.groupcollide(emys, gravity, True, False).keys():  # 重力と衝突した敵機リスト
+            exps.add(Explosion(emy, 100))  # 爆発エフェクト
+            score.value += 10  # 10点アップ
+            bird.change_img(6, screen)  # こうかとん喜びエフェクト
+        for bomb in pg.sprite.groupcollide(bombs, gravity, True, False).keys():  # 重力と衝突した爆弾リスト
+            exps.add(Explosion(bomb, 50))  # 爆発エフェクト                score.value += 1  # 1点アップ
+            bird.change_img(6, screen)  # こうかとん喜びエフェクト
+
+        for bomb in pg.sprite.spritecollide(bird, bombs, True):  # こうかとんと衝突した爆弾リスト
             bird.change_img(8, screen)  # こうかとん悲しみエフェクト
             score.update(screen)
             pg.display.update()
@@ -361,6 +394,8 @@ def main():
         exps.draw(screen)
         shield.update()
         shield.draw(screen)
+        gravity.update()
+        gravity.draw(screen)
         score.update(screen)
         pg.display.update()
         tmr += 1
