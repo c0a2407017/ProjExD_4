@@ -290,6 +290,7 @@ class Shield(pg.sprite.Sprite):
         self.image = self.original_image
         self.rect = self.image.get_rect(center=self.bird.rect.center)
 
+
     def update(self):
         self.life -= 1
         if self.life < 0:
