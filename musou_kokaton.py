@@ -166,6 +166,7 @@ class Beam(pg.sprite.Sprite):
         if check_bound(self.rect) != (True, True):
             self.kill()
 
+
 class NeoBeam(pg.sprite.Sprite):
     """
     ネオビームに関するクラス
